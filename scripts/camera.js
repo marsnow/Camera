@@ -193,7 +193,7 @@
 		
 	if(opts.pagination==true){
 		wrap.append(
-			'<div class="camera_pag"></div>'
+			'<nav class="dashnav"></nav>'
 			);
 	}
 		
@@ -215,7 +215,7 @@
 		prevNav = $('.camera_prev',wrap),
 		nextNav = $('.camera_next',wrap),
 		commands = $('.camera_commands',wrap),
-		pagination = $('.camera_pag',wrap),
+		pagination = $('.dashnav',wrap),
 		thumbs = $('.camera_thumbs_cont',wrap);	
 
 	
@@ -231,7 +231,7 @@
 	var allLinks = new Array();
 	$('> div', elem).each( function() {
 		if($(this).attr('data-link')){
-			allLinks.push($(this).attr('data-link'));
+			allLinks.push($(this).attr('data-link')); 
 		} else {
 			allLinks.push('');
 		}
@@ -904,12 +904,20 @@
 		}
 		
 		if($(pagination).length) {
-			$(pagination).append('<ul class="camera_pag_ul" />');
+			$(pagination).append('<ul role="tablist" />');
 			var li;
 			for (li = 0; li < amountSlide; li++){
-				$('.camera_pag_ul',wrap).append('<li class="pag_nav_'+li+'" style="position:relative; z-index:1002"><span><span>'+li+'</span></span></li>');
+				// $('.dashnav ul',wrap).append('<li class="pag_nav_'+li+'" style="position:relative; z-index:1002"><span><span>'+li+'</span></span></li>');
+				$('.dashnav ul',wrap).append('<li role="presentation">\
+                	<span href="" data-ac-gallery-trigger="" class="dashnav-item" role="tab" tabindex="0" aria-controls="" aria-selected="false">\
+                    	<div class="dashnav-dash">\
+                        	<span class="dashnav-progress" style="transform: scaleX(0);"></span>\
+                    	</div>\
+                	</span>\
+            		</li>\
+            	');
 			}
-			$('.camera_pag_ul li',wrap).hover(function(){
+			$('.dashnav ul',wrap).hover(function(){
 				$(this).addClass('camera_hover');
 				if($('.camera_thumb',this).length){
 					var wTh = $('.camera_thumb',this).outerWidth(),
@@ -1781,8 +1789,8 @@
 				
 				
 				if($(pagination).length){
-					$('.camera_pag li',wrap).removeClass('cameracurrent');
-					$('.camera_pag li',wrap).eq(slideI).addClass('cameracurrent');
+					$('.dashnav-item', '.dashnav li',wrap).removeClass('current').attr('aria-selected', false);					
+					$('.dashnav-item','.dashnav li:nth-child('+(slideI+1)+')',wrap).addClass('current').attr('aria-selected', true);
 				}
 						
 				if($(thumbs).length){
@@ -1959,6 +1967,12 @@
 										switch(barDirection){
 											case 'leftToRight':
 												$('#'+pieID).animate({'right':barWidth-(barWidth*rad)},(time*radSum),'linear');
+												
+												var scaleX =  'scaleX('+Math.round(rad*1000000)/1000000+')';
+												console.log(scaleX);
+												$('.dashnav-progress','.dashnav-item.current').css({
+													'transform': scaleX
+												});
 												break;
 											case 'rightToLeft':
 												$('#'+pieID).animate({'left':barWidth-(barWidth*rad)},(time*radSum),'linear');
@@ -2159,10 +2173,10 @@
 				}
 
 				if($(pagination).length){
-					$('.camera_pag li',wrap).click(function(){
+					$('.dashnav li',wrap).click(function(){
 						if(!elem.hasClass('camerasliding')){
 							var idNum = parseFloat($(this).index());
-							var curNum = parseFloat($('.cameraSlide.cameracurrent',target).index());
+							var curNum = parseFloat($('.cameraSlide.current',target).index());
 							if(idNum!=curNum) {
 								clearInterval(u);
 								imgFake();
